@@ -509,6 +509,9 @@ static void _requestUnrelayedTxGetdataDone(void *info, int success)
 
             if (! isPublishing && _BRTxPeerListCount(manager->txRelays, tx[i]->txHash) == 0 &&
                 _BRTxPeerListCount(manager->txRequests, tx[i]->txHash) == 0) {
+                peer_log(peer, "removing tx unconfirmed at height: %d, txHash: %s", manager->lastBlock->height,
+                         u256hex(tx[i]->txHash));
+                assert(tx[i]->blockHeight == TX_UNCONFIRMED);
                 BRWalletRemoveTransaction(manager->wallet, tx[i]->txHash);
             }
             else if (! isPublishing && _BRTxPeerListCount(manager->txRelays, tx[i]->txHash) < manager->maxConnectCount){
@@ -787,8 +790,12 @@ static void _peerConnected(void *info)
             if ((BRPeerPingTime(p) < BRPeerPingTime(peer) && BRPeerLastBlock(p) >= BRPeerLastBlock(peer)) ||
                 BRPeerLastBlock(p) > BRPeerLastBlock(peer)) peer = p;
         }
-
-        if (manager->downloadPeer) BRPeerDisconnect(manager->downloadPeer);
+        
+        if (manager->downloadPeer) {
+            peer_log(peer, "selecting new download peer with higher reported lastblock");
+            BRPeerDisconnect(manager->downloadPeer);
+        }
+        
         manager->downloadPeer = peer;
         manager->isConnected = 1;
         manager->estimatedHeight = BRPeerLastBlock(peer);
@@ -945,13 +952,8 @@ static void _peerRelayedTx(void *info, BRTransaction *tx)
     size_t relayCount = 0;
 
     pthread_mutex_lock(&manager->lock);
-<<<<<<< HEAD
-    peer_log(peer, "relayed tx: %s", u256_hex_encode(tx->txHash));
-
-=======
     peer_log(peer, "relayed tx: %s", u256hex(tx->txHash));
     
->>>>>>> d76a4a3... chain parameters refactor [API break]
     for (size_t i = array_count(manager->publishedTx); i > 0; i--) { // see if tx is in list of published tx
         if (UInt256Eq(manager->publishedTxHashes[i - 1], tx->txHash)) {
             txInfo = manager->publishedTx[i - 1].info;
@@ -1231,15 +1233,9 @@ static void _peerRelayedBlock(void *info, BRMerkleBlock *block)
     }
     else if (! prev) { // block is an orphan
         peer_log(peer, "relayed orphan block %s, previous %s, last block is %s, height %"PRIu32,
-<<<<<<< HEAD
-                 u256_hex_encode(block->blockHash), u256_hex_encode(block->prevBlock),
-                 u256_hex_encode(manager->lastBlock->blockHash), manager->lastBlock->height);
-
-=======
                  u256hex(block->blockHash), u256hex(block->prevBlock), u256hex(manager->lastBlock->blockHash),
                  manager->lastBlock->height);
         
->>>>>>> d76a4a3... chain parameters refactor [API break]
         if (block->timestamp + 7*24*60*60 < time(NULL)) { // ignore orphans older than one week ago
             BRMerkleBlockFree(block);
             block = NULL;
@@ -1538,6 +1534,7 @@ BRPeerManager *BRPeerManagerNew(const BRChainParams *params, BRWallet *wallet, u
 
     assert(manager != NULL);
     assert(params != NULL);
+    assert(params->standardPort != 0);
     assert(wallet != NULL);
     assert(blocks != NULL || blocksCount == 0);
     assert(peers != NULL || peersCount == 0);
@@ -1640,13 +1637,8 @@ void BRPeerManagerSetFixedPeer(BRPeerManager *manager, UInt128 address, uint16_t
 // current connect status
 BRPeerStatus BRPeerManagerConnectStatus(BRPeerManager *manager)
 {
-<<<<<<< HEAD
-    int isConnected;
-
-=======
     BRPeerStatus status = BRPeerStatusDisconnected;
     
->>>>>>> b1211de... replace BRPeerManagerIsConnected() with BRPeerManagerConnectStatus() [API break]
     assert(manager != NULL);
     pthread_mutex_lock(&manager->lock);
     if (manager->isConnected != 0) status = BRPeerStatusConnected;
