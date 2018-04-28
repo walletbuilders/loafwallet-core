@@ -122,15 +122,16 @@ static const struct { uint32_t height; const char *hash; uint32_t timestamp; uin
     { 993888, "1d80e7793bd9e16e0ce84d93b105d6732ed63e1a6fe491c1b7ea310e75eb504e", 1463613744, 0x1b014cbd },
     { 1001952, "eccbede26ac99ea996377972d5bd05b9306bcc6ac1f4071f1587e3094a704dff", 1464900396, 0x1b01a29e },
     { 1058400, "76ce37c66d449a4ffbfc35674cf932da701066a001dc223754f9250dd2bdbc62", 1473296285, 0x1b013ca7 },
-    { 1260000, "85a22b528d805bf7a641d1d7c6d96ef5054beda3dcab6be7b83f2e3df24b33a8", 1502976600, 0x1a25a0d3 }
+    { 1260000, "85a22b528d805bf7a641d1d7c6d96ef5054beda3dcab6be7b83f2e3df24b33a8", 1502976600, 0x1a25a0d3 },
+    { 1411200, "92c85b76f3d4bffca76b23717e4eb1b667c77c96fd52d4dd5dd843bbee64cd73", 1524838967, 0x1a0203a7 }
 };
 
 static const char *dns_seeds[] = {
     "dnsseed.litecoinpool.org.",
     "seed-a.litecoin.loshan.co.uk.",
     "dnsseed.thrasher.io.",
-    "dnsseed.litecointools.com.",
-    "dnsseed.koin-project.com."
+    "dnsseed.koin-project.com.",
+    "dnsseed.litecointools.com."
 };
 
 #endif
